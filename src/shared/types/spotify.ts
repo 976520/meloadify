@@ -22,6 +22,7 @@ export interface SpotifyTrack {
   };
   duration_ms: number;
   preview_url: string | null;
+  popularity: number;
 }
 
 export interface SpotifyArtist {
