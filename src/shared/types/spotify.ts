@@ -4,6 +4,12 @@ export interface SpotifyTimeRange {
   long_term: string;
 }
 
+export interface SpotifyImage {
+  url: string;
+  height: number | undefined;
+  width: number | undefined;
+}
+
 export interface SpotifyTrack {
   id: string;
   name: string;
@@ -14,11 +20,7 @@ export interface SpotifyTrack {
   album: {
     id: string;
     name: string;
-    images: Array<{
-      url: string;
-      height: number;
-      width: number;
-    }>;
+    images: SpotifyImage[];
   };
   duration_ms: number;
   preview_url: string | null;
@@ -28,11 +30,7 @@ export interface SpotifyTrack {
 export interface SpotifyArtist {
   id: string;
   name: string;
-  images: Array<{
-    url: string;
-    height: number;
-    width: number;
-  }>;
+  images: SpotifyImage[];
   genres: string[];
   popularity: number;
 }
