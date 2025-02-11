@@ -6,8 +6,8 @@ export interface SpotifyTimeRange {
 
 export interface SpotifyImage {
   url: string;
-  height: number | undefined;
-  width: number | undefined;
+  height?: number;
+  width?: number;
 }
 
 export interface SpotifyTrack {
