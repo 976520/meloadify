@@ -5,6 +5,44 @@ import type { ListeningStats } from "@/shared/types/spotify";
 import { StatCard } from "@/shared/ui/stat-card";
 import { TrackList } from "@/entities/track";
 import { formatDuration } from "@/shared/lib/format";
+import styled from "styled-components";
+
+const StatsGrid = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.xl};
+`;
+
+const StatsSection = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding: ${({ theme }) => theme.spacing.xl};
+`;
+
+const TopItemsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: ${({ theme }) => theme.spacing.xl};
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: ${({ theme }) => theme.typography.weights.bold};
+  color: ${({ theme }) => theme.colors.white};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: ${({ theme }) => theme.colors.lightGrey};
+  font-size: 1.125rem;
+`;
 
 interface StatsDisplayProps {
   stats: ListeningStats | null;
@@ -14,37 +52,31 @@ interface StatsDisplayProps {
 
 export function StatsDisplay({ stats, loading, period }: StatsDisplayProps) {
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-lg text-zinc-400">Loading...</div>
-      </div>
-    );
+    return <LoadingContainer>Loading...</LoadingContainer>;
   }
 
   if (!stats) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-lg text-zinc-400">No stats available</div>
-      </div>
-    );
+    return <LoadingContainer>No stats available</LoadingContainer>;
   }
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard title="들은 시간" value={formatDuration(stats.totalListeningTime)} period={period} />
-      </div>
+    <StatsGrid>
+      <StatsSection>
+        <StatCard title="들은 시간" value={formatDuration(stats.totalListeningTime)} />
+      </StatsSection>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">최애곡</h2>
-          <TrackList tracks={stats.topTracks} />
-        </div>
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">최애아티스트</h2>
-          <ArtistList artists={stats.topArtists} />
-        </div>
-      </div>
-    </div>
+      <StatsSection>
+        <TopItemsGrid>
+          <div>
+            <SectionTitle>최애곡</SectionTitle>
+            <TrackList tracks={stats.topTracks} />
+          </div>
+          <div>
+            <SectionTitle>최애아티스트</SectionTitle>
+            <ArtistList artists={stats.topArtists} />
+          </div>
+        </TopItemsGrid>
+      </StatsSection>
+    </StatsGrid>
   );
 }

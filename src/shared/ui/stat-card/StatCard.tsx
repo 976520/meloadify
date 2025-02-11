@@ -1,7 +1,6 @@
 interface StatCardProps {
   title: string;
   value: string | number;
-  period: "일" | "주" | "월" | "년";
 }
 
 export function StatCard({ title, value, period }: StatCardProps) {
