@@ -23,9 +23,9 @@ const nextConfig = {
     ],
   },
   reactStrictMode: true,
-  experimental: {
-    optimizeCss: false,
-  },
+  poweredByHeader: false,
+  compress: true,
+  generateEtags: true,
 };
 
 module.exports = nextConfig;

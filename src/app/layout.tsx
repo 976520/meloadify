@@ -2,6 +2,7 @@
 
 import "./globals.css";
 
+import { Analytics } from "@vercel/analytics/react";
 import { GlobalStyle } from "@/shared/styles/GlobalStyle";
 import { Inter } from "next/font/google";
 import Script from "next/script";
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <StyledComponentsRegistry>
           <ThemeProvider theme={theme}>
             <GlobalStyle />
+            <Analytics />
             {children}
           </ThemeProvider>
         </StyledComponentsRegistry>
