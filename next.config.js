@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compiler: {
+    styledComponents: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -19,11 +22,9 @@ const nextConfig = {
       },
     ],
   },
-  // Suppress specific warnings
   reactStrictMode: true,
   experimental: {
-    // This will force Next.js to use React's new client-side hydration
-    optimizeCss: true,
+    optimizeCss: false,
   },
 };
 

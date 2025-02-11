@@ -1,15 +1,15 @@
+"use client";
+
 import "./globals.css";
 
+import { GlobalStyle } from "@/shared/styles/GlobalStyle";
 import { Inter } from "next/font/google";
-import type { Metadata } from "next";
 import Script from "next/script";
+import StyledComponentsRegistry from "@/shared/lib/registry";
+import { ThemeProvider } from "styled-components";
+import { theme } from "@/shared/styles/theme";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Meloadify - Your Spotify Statistics",
-  description: "View your Spotify listening habits and statistics",
-};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,8 +21,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data: blob:; font-src 'self' https: data:; connect-src 'self' https: wss:;"
         />
       </head>
-      <body className={inter.className}>
-        {children}
+      <body>
+        <StyledComponentsRegistry>
+          <ThemeProvider theme={theme}>
+            <GlobalStyle />
+            {children}
+          </ThemeProvider>
+        </StyledComponentsRegistry>
         <Script id="handle-extensions" strategy="afterInteractive">
           {`
             window.addEventListener('load', function() {
