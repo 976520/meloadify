@@ -1,4 +1,4 @@
-export type TimeRange = "일" | "주" | "월" | "년";
+export type TimeRange = "4주" | "6개월" | "전체";
 
 export interface TimeRangeSelectorProps {
   selectedRange: TimeRange;

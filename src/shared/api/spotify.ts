@@ -8,6 +8,9 @@ import {
   startOfMonth,
   startOfWeek,
   startOfYear,
+  subMonths,
+  subWeeks,
+  subYears,
 } from "date-fns";
 
 import { SPOTIFY_CONFIG } from "../config/spotify";
@@ -25,9 +28,10 @@ export class SpotifyClient {
     });
   }
 
-  private async getRecentlyPlayed(before: number): Promise<SpotifyApi.PlayHistoryObject[]> {
+  private async getRecentlyPlayed(after: number, before: number): Promise<SpotifyApi.PlayHistoryObject[]> {
     const response = await this.client.getMyRecentlyPlayedTracks({
       limit: 50,
+      after,
       before,
     });
     return response.body.items;
@@ -49,41 +53,54 @@ export class SpotifyClient {
     return response.body.items;
   }
 
-  async getListeningStats(period: "일" | "주" | "월" | "년"): Promise<ListeningStats> {
+  private getTimeRange(period: "4주" | "6개월" | "전체"): "short_term" | "medium_term" | "long_term" {
+    switch (period) {
+      case "4주":
+        return "short_term";
+      case "6개월":
+        return "medium_term";
+      case "전체":
+        return "long_term";
+      default:
+        return "short_term";
+    }
+  }
+
+  async getListeningStats(period: "4주" | "6개월" | "전체"): Promise<ListeningStats> {
     try {
       const now = new Date();
       let startDate: Date;
       let endDate = now;
 
       switch (period) {
-        case "일":
-          startDate = startOfDay(now);
-          endDate = endOfDay(now);
+        case "4주":
+          startDate = subWeeks(now, 4);
           break;
-        case "주":
-          startDate = startOfWeek(now);
-          endDate = endOfWeek(now);
+        case "6개월":
+          startDate = subMonths(now, 6);
           break;
-        case "월":
-          startDate = startOfMonth(now);
-          endDate = endOfMonth(now);
-          break;
-        case "년":
-          startDate = startOfYear(now);
-          endDate = endOfYear(now);
+        case "전체":
+          startDate = subYears(now, 50);
           break;
         default:
           throw new Error("Invalid period");
       }
 
+      const timeRange = this.getTimeRange(period);
+
       try {
         const [recentTracks, topTracks, topArtists] = await Promise.all([
-          this.getRecentlyPlayed(endDate.getTime()),
-          this.getTopTracks("short_term", 10).catch(() => []),
-          this.getTopArtists("short_term", 10).catch(() => []),
+          this.getRecentlyPlayed(startDate.getTime(), endDate.getTime()),
+          this.getTopTracks(timeRange, 10).catch(() => []),
+          this.getTopArtists(timeRange, 10).catch(() => []),
         ]);
 
-        const totalListeningTime = recentTracks.reduce((acc, track) => acc + track.track.duration_ms, 0);
+        const filteredTracks = recentTracks.filter((track) => {
+          const playedAt = new Date(track.played_at);
+          return playedAt >= startDate && playedAt <= endDate;
+        });
+
+        const totalListeningTime = filteredTracks.reduce((acc, track) => acc + track.track.duration_ms, 0);
 
         return {
           totalListeningTime,

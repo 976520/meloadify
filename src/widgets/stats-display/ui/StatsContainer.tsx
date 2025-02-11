@@ -11,7 +11,7 @@ interface StatsContainerProps {
 }
 
 export function StatsContainer({ accessToken }: StatsContainerProps) {
-  const [period, setPeriod] = useState<"일" | "주" | "월" | "년">("주");
+  const [period, setPeriod] = useState<"4주" | "6개월" | "전체">("4주");
   const [stats, setStats] = useState<ListeningStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

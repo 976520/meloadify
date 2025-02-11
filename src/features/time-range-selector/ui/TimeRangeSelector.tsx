@@ -3,7 +3,7 @@
 import { SelectorContainer, TimeButton } from "./styles";
 import { TimeRange, TimeRangeSelectorProps } from "../model/types";
 
-const ranges: TimeRange[] = ["일", "주", "월", "년"];
+const ranges: TimeRange[] = ["4주", "6개월", "전체"];
 
 export function TimeRangeSelector({ selectedRange, onSelect }: TimeRangeSelectorProps) {
   return (

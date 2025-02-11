@@ -8,8 +8,8 @@ export const SelectorContainer = styled.div`
 `;
 
 export const TimeButton = styled.button<{ isSelected: boolean }>`
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
