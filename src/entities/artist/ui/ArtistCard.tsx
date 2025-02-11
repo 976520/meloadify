@@ -1,5 +1,82 @@
+import { BaseCard } from "@/shared/ui/base-card/BaseCard";
 import Image from "next/image";
 import type { SpotifyArtist } from "@/shared/types/spotify";
+import styled from "styled-components";
+
+const Card = styled(BaseCard)`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  height: 96px;
+`;
+
+const RankNumber = styled.div`
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.primary};
+  min-width: 36px;
+  text-align: center;
+`;
+
+const ImageWrapper = styled.div`
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}20, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  ${Card}:hover &::after {
+    opacity: 1;
+  }
+`;
+
+const InfoSection = styled.div`
+  flex-grow: 1;
+  min-width: 0;
+  padding: 0 ${({ theme }) => theme.spacing.sm};
+`;
+
+const ArtistName = styled.h3`
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.white};
+  margin-bottom: 4px;
+  truncate: true;
+`;
+
+const GenreText = styled.p`
+  font-size: 0.9rem;
+  color: ${({ theme }) => theme.colors.lightGrey};
+  opacity: 0.8;
+  margin-bottom: 6px;
+  truncate: true;
+`;
+
+const PopularityBar = styled.div`
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1.5px;
+  overflow: hidden;
+`;
+
+const PopularityFill = styled.div<{ width: number }>`
+  height: 100%;
+  background: linear-gradient(90deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.primary}80);
+  border-radius: 1.5px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  width: ${({ width }) => width}%;
+`;
 
 interface ArtistCardProps {
   artist: SpotifyArtist;
@@ -8,30 +85,23 @@ interface ArtistCardProps {
 
 export function ArtistCard({ artist, index }: ArtistCardProps) {
   return (
-    <div className="flex items-center gap-4 p-4 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors">
-      <div className="flex-shrink-0 w-12 text-center text-zinc-400 font-medium">{index + 1}</div>
-      <div className="flex-shrink-0">
+    <Card>
+      <RankNumber>{index + 1}</RankNumber>
+      <ImageWrapper>
         <Image
           src={artist.images[0]?.url || "/placeholder-artist.png"}
           alt={artist.name}
-          width={48}
-          height={48}
-          className="rounded-full"
+          fill
+          style={{ objectFit: "cover" }}
         />
-      </div>
-      <div className="flex-grow min-w-0">
-        <h3 className="text-base font-medium text-white truncate">{artist.name}</h3>
-        <p className="text-sm text-zinc-400 truncate">{artist.genres.slice(0, 3).join(", ")}</p>
-        <div className="mt-1.5 flex items-center gap-2">
-          <div className="flex-grow h-1.5 bg-zinc-700 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-green-500 rounded-full transition-all duration-300"
-              style={{ width: `${artist.popularity}%` }}
-            />
-          </div>
-          <span className="text-xs text-zinc-400 flex-shrink-0 w-8">{artist.popularity}%</span>
-        </div>
-      </div>
-    </div>
+      </ImageWrapper>
+      <InfoSection>
+        <ArtistName>{artist.name}</ArtistName>
+        <GenreText>{artist.genres.slice(0, 3).join(", ")}</GenreText>
+        <PopularityBar>
+          <PopularityFill width={artist.popularity} />
+        </PopularityBar>
+      </InfoSection>
+    </Card>
   );
 }

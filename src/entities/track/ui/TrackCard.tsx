@@ -1,5 +1,78 @@
+import { BaseCard } from "@/shared/ui/base-card/BaseCard";
 import Image from "next/image";
 import type { SpotifyTrack } from "@/shared/types/spotify";
+import styled from "styled-components";
+
+const Card = styled(BaseCard)`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  height: 96px;
+`;
+
+const RankNumber = styled.div`
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.primary};
+  min-width: 36px;
+  text-align: center;
+`;
+
+const ImageWrapper = styled.div`
+  position: relative;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}20, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  ${Card}:hover &::after {
+    opacity: 1;
+  }
+`;
+
+const InfoSection = styled.div`
+  flex-grow: 1;
+  min-width: 0;
+  padding: 0 ${({ theme }) => theme.spacing.sm};
+`;
+
+const TrackName = styled.h3`
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.white};
+  margin-bottom: 4px;
+  truncate: true;
+`;
+
+const ArtistName = styled.p`
+  font-size: 0.9rem;
+  color: ${({ theme }) => theme.colors.lightGrey};
+  opacity: 0.8;
+  truncate: true;
+`;
+
+const AudioPlayer = styled.audio`
+  width: 120px;
+  height: 32px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  margin-right: ${({ theme }) => theme.spacing.sm};
+
+  &:hover {
+    opacity: 1;
+  }
+`;
 
 interface TrackCardProps {
   track: SpotifyTrack;
@@ -8,26 +81,21 @@ interface TrackCardProps {
 
 export function TrackCard({ track, index }: TrackCardProps) {
   return (
-    <div className="flex items-center gap-4 p-4 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors">
-      <div className="flex-shrink-0 w-12 text-center text-zinc-400 font-medium">{index + 1}</div>
-      <div className="flex-shrink-0">
+    <Card>
+      <RankNumber>{index + 1}</RankNumber>
+      <ImageWrapper>
         <Image
           src={track.album.images[0]?.url || "/placeholder-album.png"}
           alt={track.album.name}
-          width={48}
-          height={48}
-          className="rounded-md"
+          fill
+          style={{ objectFit: "cover" }}
         />
-      </div>
-      <div className="flex-grow min-w-0">
-        <h3 className="text-base font-medium text-white truncate">{track.name}</h3>
-        <p className="text-sm text-zinc-400 truncate">{track.artists.map((artist) => artist.name).join(", ")}</p>
-      </div>
-      {track.preview_url && (
-        <audio controls className="w-28 h-8 flex-shrink-0" src={track.preview_url}>
-          Your browser does not support the audio element.
-        </audio>
-      )}
-    </div>
+      </ImageWrapper>
+      <InfoSection>
+        <TrackName>{track.name}</TrackName>
+        <ArtistName>{track.artists.map((artist) => artist.name).join(", ")}</ArtistName>
+      </InfoSection>
+      {track.preview_url && <AudioPlayer controls src={track.preview_url} />}
+    </Card>
   );
 }
