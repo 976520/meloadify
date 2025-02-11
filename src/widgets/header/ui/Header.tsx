@@ -2,6 +2,63 @@
 
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import styled from "styled-components";
+
+const HeaderWrapper = styled.header`
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(18, 18, 18, 0.9);
+  backdrop-filter: blur(8px);
+`;
+
+const HeaderContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
+`;
+
+const HeaderContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const Logo = styled.h1`
+  font-size: 1.5rem;
+  font-weight: ${({ theme }) => theme.typography.weights.bold};
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const UserSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const UserName = styled.span`
+  font-size: 0.875rem;
+  font-weight: ${({ theme }) => theme.typography.weights.medium};
+  color: ${({ theme }) => theme.colors.white};
+`;
+
+const LogoutButton = styled.button`
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
+  font-size: 0.875rem;
+  font-weight: ${({ theme }) => theme.typography.weights.medium};
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.primary};
+  border-radius: ${({ theme }) => theme.borderRadius.pill};
+  transition: background-color ${({ theme }) => theme.transitions.default};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primaryHover};
+  }
+`;
+
+const UserAvatar = styled(Image)`
+  border-radius: 50%;
+`;
 
 interface HeaderProps {
   user: {
@@ -13,27 +70,17 @@ interface HeaderProps {
 
 export function Header({ user }: HeaderProps) {
   return (
-    <header className="bg-zinc-900/90 backdrop-blur-sm sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold text-green-500">Meloadify</h1>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            {user.image && (
-              <Image src={user.image} alt={user.name || "User"} width={32} height={32} className="rounded-full" />
-            )}
-            <span className="text-sm font-medium">{user.name}</span>
-            <button
-              onClick={() => signOut()}
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-full hover:bg-green-700 transition-colors"
-            >
-              로그아웃
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
+    <HeaderWrapper>
+      <HeaderContainer>
+        <HeaderContent>
+          <Logo>Meloadify</Logo>
+          <UserSection>
+            {user.image && <UserAvatar src={user.image} alt={user.name || "User"} width={32} height={32} />}
+            <UserName>{user.name}</UserName>
+            <LogoutButton onClick={() => signOut()}>로그아웃</LogoutButton>
+          </UserSection>
+        </HeaderContent>
+      </HeaderContainer>
+    </HeaderWrapper>
   );
 }
