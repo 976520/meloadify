@@ -28,11 +28,10 @@ export class SpotifyClient {
     });
   }
 
-  private async getRecentlyPlayed(after: number, before: number): Promise<SpotifyApi.PlayHistoryObject[]> {
+  private async getRecentlyPlayed(before: number): Promise<SpotifyApi.PlayHistoryObject[]> {
     const response = await this.client.getMyRecentlyPlayedTracks({
       limit: 50,
-      after,
-      before,
+      before: Math.floor(before / 1000),
     });
     return response.body.items;
   }
@@ -90,7 +89,7 @@ export class SpotifyClient {
 
       try {
         const [recentTracks, topTracks, topArtists] = await Promise.all([
-          this.getRecentlyPlayed(startDate.getTime(), endDate.getTime()),
+          this.getRecentlyPlayed(endDate.getTime()),
           this.getTopTracks(timeRange, 10).catch(() => []),
           this.getTopArtists(timeRange, 10).catch(() => []),
         ]);

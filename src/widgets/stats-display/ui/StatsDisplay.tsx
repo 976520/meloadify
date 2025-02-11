@@ -3,6 +3,7 @@
 import { ArtistList } from "@/entities/artist";
 import type { ListeningStats } from "@/shared/types/spotify";
 import { StatCard } from "@/shared/ui/stat-card";
+import { TimeRange } from "@/features/time-range-selector/model/types";
 import { TrackList } from "@/entities/track";
 import { formatDuration } from "@/shared/lib/format";
 import styled from "styled-components";
@@ -47,7 +48,7 @@ const LoadingContainer = styled.div`
 interface StatsDisplayProps {
   stats: ListeningStats | null;
   loading: boolean;
-  period: "일" | "주" | "월" | "년";
+  period: TimeRange;
 }
 
 export function StatsDisplay({ stats, loading, period }: StatsDisplayProps) {

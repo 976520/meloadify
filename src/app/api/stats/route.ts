@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { SpotifyClient } from "@/shared/api/spotify";
+import type { TimeRange } from "@/features/time-range-selector/model/types";
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const period = searchParams.get("period") as "일" | "주" | "월" | "년";
+    const period = searchParams.get("period") as TimeRange;
     const accessToken = request.headers.get("Authorization")?.replace("Bearer ", "");
 
     if (!accessToken) {
@@ -21,6 +22,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(stats);
   } catch (error) {
+    console.error("API Error:", error);
     return NextResponse.json({ error: "Failed to fetch stats" }, { status: 500 });
   }
 }
