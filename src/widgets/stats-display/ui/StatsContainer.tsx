@@ -37,7 +37,7 @@ export function StatsContainer({ accessToken }: StatsContainerProps) {
         const data = await response.json();
         setStats(data);
       } catch (error) {
-        console.error("Failed to fetch stats:", error);
+        console.error(error);
         setError(error instanceof Error ? error.message : "Failed to fetch stats");
         setStats(null);
       } finally {

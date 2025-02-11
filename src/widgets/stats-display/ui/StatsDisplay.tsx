@@ -53,11 +53,11 @@ interface StatsDisplayProps {
 
 export function StatsDisplay({ stats, loading, period }: StatsDisplayProps) {
   if (loading) {
-    return <LoadingContainer>Loading...</LoadingContainer>;
+    return <LoadingContainer>로딩중이에요...</LoadingContainer>;
   }
 
   if (!stats) {
-    return <LoadingContainer>No stats available</LoadingContainer>;
+    return <LoadingContainer>데이터가 없어요</LoadingContainer>;
   }
 
   return (
