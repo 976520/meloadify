@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { signOut } from "next-auth/react";
 import styled from "styled-components";
-import { toast } from "sonner";
 
 const HeaderWrapper = styled.header`
   position: sticky;
@@ -70,16 +69,6 @@ interface HeaderProps {
 }
 
 export function Header({ user }: HeaderProps) {
-  const handleLogout = async () => {
-    try {
-      await signOut({ redirect: false });
-      toast.success("로그아웃 성공!");
-      window.location.href = "/login";
-    } catch (error) {
-      toast.error("로그아웃에 실패했어요");
-    }
-  };
-
   return (
     <HeaderWrapper>
       <HeaderContainer>
@@ -88,7 +77,7 @@ export function Header({ user }: HeaderProps) {
           <UserSection>
             {user.image && <UserAvatar src={user.image} alt={user.name || "User"} width={32} height={32} />}
             <UserName>{user.name}</UserName>
-            <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+            <LogoutButton onClick={() => signOut()}>로그아웃</LogoutButton>
           </UserSection>
         </HeaderContent>
       </HeaderContainer>
