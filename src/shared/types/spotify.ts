@@ -1,70 +1,77 @@
-export interface SpotifyTimeRange {
-  short_term: string;
-  medium_term: string;
-  long_term: string;
+export type SpotifyTimeRangeType = "short_term" | "medium_term" | "long_term";
+export type StatsPeriodType = "4주" | "6개월" | "전체";
+
+export const STATS_PERIOD = {
+  MONTH: "4주",
+  HALF_YEAR: "6개월",
+  ALL_TIME: "전체",
+} as const;
+
+export interface SpotifyExternalUrls {
+  readonly spotify: string;
 }
 
 export interface SpotifyImage {
-  url: string;
-  height?: number;
-  width?: number;
+  readonly url: string;
+  readonly height?: number;
+  readonly width?: number;
+}
+
+export interface SpotifyArtistBase {
+  readonly id: string;
+  readonly name: string;
+  readonly external_urls: SpotifyExternalUrls;
 }
 
 export interface SpotifyTrack {
-  id: string;
-  name: string;
-  artists: Array<{
-    id: string;
-    name: string;
-    external_urls: {
-      spotify: string;
-    };
-  }>;
-  album: {
-    id: string;
-    name: string;
-    images: SpotifyImage[];
+  readonly id: string;
+  readonly name: string;
+  readonly artists: ReadonlyArray<SpotifyArtistBase>;
+  readonly album: {
+    readonly id: string;
+    readonly name: string;
+    readonly images: ReadonlyArray<SpotifyImage>;
   };
-  duration_ms: number;
-  preview_url: string | null;
-  popularity: number;
-  external_urls: {
-    spotify: string;
-  };
+  readonly duration_ms: number;
+  readonly preview_url: string | null;
+  readonly popularity: number;
+  readonly external_urls: SpotifyExternalUrls;
 }
 
-export interface SpotifyArtist {
-  id: string;
-  name: string;
-  images: SpotifyImage[];
-  genres: string[];
-  popularity: number;
-  external_urls: {
-    spotify: string;
-  };
+export interface SpotifyArtist extends SpotifyArtistBase {
+  readonly images: ReadonlyArray<SpotifyImage>;
+  readonly genres: ReadonlyArray<string>;
+  readonly popularity: number;
 }
 
 export interface UserTopItems {
-  tracks: SpotifyTrack[];
-  artists: SpotifyArtist[];
+  readonly tracks: ReadonlyArray<SpotifyTrack>;
+  readonly artists: ReadonlyArray<SpotifyArtist>;
 }
 
 export interface ListeningStats {
-  totalListeningTime: number;
-  topTracks: SpotifyTrack[];
-  topArtists: SpotifyArtist[];
-  period: "4주" | "6개월" | "전체";
-  startDate: string;
-  endDate: string;
+  readonly totalListeningTime: number;
+  readonly topTracks: ReadonlyArray<SpotifyTrack>;
+  readonly topArtists: ReadonlyArray<SpotifyArtist>;
+  readonly period: StatsPeriodType;
+  readonly startDate: string;
+  readonly endDate: string;
+}
+
+export interface SpotifyUser {
+  readonly id: string;
+  readonly name: string;
+  readonly email: string;
+  readonly image?: string;
 }
 
 export interface SpotifySession {
-  accessToken: string;
-  refreshToken: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    image?: string;
-  };
+  readonly accessToken: string;
+  readonly refreshToken: string;
+  readonly user: SpotifyUser;
+}
+
+export interface SpotifyError {
+  readonly status: number;
+  readonly message: string;
 }

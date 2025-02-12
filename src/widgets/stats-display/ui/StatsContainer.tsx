@@ -115,7 +115,7 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
     <div className="container mx-auto px-4 py-8">
       {todayStats && (
         <ListeningTimeMessage>
-          {today}, {userName}님은 spotify에서 {formatTrackCount(todayStats.totalListeningTime)} 을 들었습니다.
+          {today}, {userName}님은 spotify에서 {formatTrackCount(todayStats.totalListeningTime)}을 들었습니다.
         </ListeningTimeMessage>
       )}
       <TimeRangeSelector onSelect={setPeriod} selectedRange={period} />

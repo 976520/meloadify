@@ -1,12 +1,26 @@
-import type { ListeningStats, SpotifyArtist, SpotifyTrack } from "../types/spotify";
+import type {
+  ListeningStats,
+  SpotifyArtist,
+  SpotifyError,
+  SpotifyTimeRangeType,
+  SpotifyTrack,
+  StatsPeriodType,
+} from "../types/spotify";
 import { startOfDay, subMonths, subWeeks, subYears } from "date-fns";
 
 import { SPOTIFY_CONFIG } from "../config/spotify";
 import SpotifyWebApi from "spotify-web-api-node";
 
+class SpotifyApiError extends Error implements SpotifyError {
+  constructor(public readonly status: number, public readonly message: string) {
+    super(message);
+    this.name = "SpotifyApiError";
+  }
+}
+
 export class SpotifyClient {
-  private client: SpotifyWebApi;
-  private refreshToken?: string;
+  private readonly client: SpotifyWebApi;
+  private readonly refreshToken?: string;
 
   constructor(accessToken: string, refreshToken?: string) {
     this.client = new SpotifyWebApi({
@@ -19,31 +33,29 @@ export class SpotifyClient {
     this.refreshToken = refreshToken;
   }
 
-  private async refreshAccessToken() {
+  private async refreshAccessToken(): Promise<string> {
     if (!this.refreshToken) {
-      throw new Error("토큰이 없어요 ");
+      throw new SpotifyApiError(401, "리프레시 토큰이 없습니다");
     }
 
     try {
-      const data = await this.client.refreshAccessToken();
-      const { access_token } = data.body;
-
+      const {
+        body: { access_token },
+      } = await this.client.refreshAccessToken();
       this.client.setAccessToken(access_token);
-
       return access_token;
     } catch (error) {
-      console.error(error);
-      throw new Error("토큰 갱신이 실패했어요");
+      console.error("[SpotifyClient] 토큰 갱신 실패:", error);
+      throw new SpotifyApiError(401, "토큰 갱신에 실패했습니다");
     }
   }
 
-  private async refreshAccessTokenIfNeeded() {
+  private async refreshAccessTokenIfNeeded(): Promise<void> {
     try {
       await this.client.getMe();
     } catch (error) {
-      if (error instanceof Error && error.message.includes("토큰이 만료되었어요")) {
-        const newAccessToken = await this.refreshAccessToken();
-        this.client.setAccessToken(newAccessToken);
+      if (error instanceof Error && error.message.includes("토큰이 만료되었습니다")) {
+        await this.refreshAccessToken();
       } else {
         throw error;
       }
@@ -52,23 +64,57 @@ export class SpotifyClient {
 
   private async getRecentlyPlayed(): Promise<SpotifyApi.PlayHistoryObject[]> {
     try {
-      const response = await this.client.getMyRecentlyPlayedTracks({
+      const {
+        body: { items },
+      } = await this.client.getMyRecentlyPlayedTracks({
         limit: 50,
         after: startOfDay(new Date()).getTime(),
       });
 
-      console.log("API", {
-        tracks: response.body.items.map((item) => ({
-          name: item.track.name,
-          played_at: item.played_at,
-        })),
-      });
-
-      return response.body.items;
+      return items;
     } catch (error) {
-      console.error(error);
-      throw error;
+      console.error("[SpotifyClient] 최근 재생 기록 조회 실패:", error);
+      throw new SpotifyApiError(500, "최근 재생 기록을 가져오는데 실패했습니다");
     }
+  }
+
+  private async getTopTracks(
+    timeRange: SpotifyTimeRangeType = "short_term",
+    limit: number = 20
+  ): Promise<SpotifyTrack[]> {
+    try {
+      const {
+        body: { items },
+      } = await this.client.getMyTopTracks({ time_range: timeRange, limit });
+      return items;
+    } catch (error) {
+      console.error("[SpotifyClient] 인기 트랙 조회 실패:", error);
+      throw new SpotifyApiError(500, "인기 트랙을 가져오는데 실패했습니다");
+    }
+  }
+
+  private async getTopArtists(
+    timeRange: SpotifyTimeRangeType = "short_term",
+    limit: number = 20
+  ): Promise<SpotifyArtist[]> {
+    try {
+      const {
+        body: { items },
+      } = await this.client.getMyTopArtists({ time_range: timeRange, limit });
+      return items;
+    } catch (error) {
+      console.error("[SpotifyClient] 인기 아티스트 조회 실패:", error);
+      throw new SpotifyApiError(500, "인기 아티스트를 가져오는데 실패했습니다");
+    }
+  }
+
+  private getTimeRange(period: StatsPeriodType): SpotifyTimeRangeType {
+    const timeRangeMap: Record<StatsPeriodType, SpotifyTimeRangeType> = {
+      "4주": "short_term",
+      "6개월": "medium_term",
+      전체: "long_term",
+    };
+    return timeRangeMap[period];
   }
 
   async getTodayStats(): Promise<ListeningStats> {
@@ -76,62 +122,30 @@ export class SpotifyClient {
       await this.refreshAccessTokenIfNeeded();
 
       const recentTracks = await this.getRecentlyPlayed();
-      console.log(recentTracks.length);
+      const startDate = startOfDay(new Date());
+      const endDate = new Date();
 
       return {
         totalListeningTime: recentTracks.length,
         topTracks: [],
         topArtists: [],
         period: "4주",
-        startDate: startOfDay(new Date()).toISOString(),
-        endDate: new Date().toISOString(),
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
       };
     } catch (error) {
-      console.error(error);
-      throw error;
+      console.error("[SpotifyClient] 오늘의 통계 조회 실패:", error);
+      throw error instanceof SpotifyApiError ? error : new SpotifyApiError(500, "통계를 가져오는데 실패했습니다");
     }
   }
 
-  private async getTopTracks(
-    time_range: "short_term" | "medium_term" | "long_term" = "short_term",
-    limit: number = 20
-  ): Promise<SpotifyTrack[]> {
-    const response = await this.client.getMyTopTracks({ time_range, limit });
-    return response.body.items;
-  }
-
-  private async getTopArtists(
-    time_range: "short_term" | "medium_term" | "long_term" = "short_term",
-    limit: number = 20
-  ): Promise<SpotifyArtist[]> {
-    const response = await this.client.getMyTopArtists({ time_range, limit });
-    return response.body.items;
-  }
-
-  private getTimeRange(period: "4주" | "6개월" | "전체"): "short_term" | "medium_term" | "long_term" {
-    switch (period) {
-      case "4주":
-        return "short_term";
-      case "6개월":
-        return "medium_term";
-      case "전체":
-        return "long_term";
-      default:
-        return "short_term";
-    }
-  }
-
-  async getListeningStats(period: "4주" | "6개월" | "전체"): Promise<ListeningStats> {
+  async getListeningStats(period: StatsPeriodType): Promise<ListeningStats> {
     try {
       await this.refreshAccessTokenIfNeeded();
 
       const now = new Date();
       const startDate = startOfDay(now);
-      const endDate = now;
-      console.log({ startDate, endDate });
-
       const timeRange = this.getTimeRange(period);
-      const currentTime = endDate.getTime();
 
       const [recentTracks, topTracks, topArtists] = await Promise.all([
         this.getRecentlyPlayed(),
@@ -139,33 +153,22 @@ export class SpotifyClient {
         this.getTopArtists(timeRange, 10),
       ]);
 
-      console.log(recentTracks.length);
-
       const filteredTracks = recentTracks.filter((track) => {
         const playedAt = new Date(track.played_at);
-        const isInRange = playedAt >= startDate && playedAt <= endDate;
-        if (isInRange) {
-          console.log({
-            name: track.track?.name,
-            playedAt: playedAt.toISOString(),
-          });
-        }
-        return isInRange;
+        return playedAt >= startDate && playedAt <= now;
       });
-
-      console.log(filteredTracks.length);
 
       return {
         totalListeningTime: filteredTracks.length,
-        topTracks: topTracks || [],
-        topArtists: topArtists || [],
+        topTracks,
+        topArtists,
         period,
         startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
+        endDate: now.toISOString(),
       };
     } catch (error) {
-      console.error(error);
-      throw error;
+      console.error("[SpotifyClient] 청취 통계 조회 실패:", error);
+      throw error instanceof SpotifyApiError ? error : new SpotifyApiError(500, "통계를 가져오는데 실패했습니다");
     }
   }
 }
