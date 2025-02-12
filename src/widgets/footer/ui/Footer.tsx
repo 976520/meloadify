@@ -5,7 +5,6 @@ import Link from "next/link";
 import styled from "styled-components";
 
 const FooterWrapper = styled.footer`
-  position: fixed;
   bottom: 0;
   width: 100%;
   z-index: 50;

@@ -84,7 +84,7 @@ export const StatsDisplay = memo(function StatsDisplay({ stats, loading, period,
   if (loading) {
     return (
       <LoadingWrapper>
-        <BounceDot option={{ color: theme.colors.primary, size: 50 }} />
+        <BounceDot option={{ color: theme.colors.primary, size: 25 }} />
       </LoadingWrapper>
     );
   }
