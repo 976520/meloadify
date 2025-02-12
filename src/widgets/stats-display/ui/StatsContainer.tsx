@@ -37,7 +37,6 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
   const userName = user?.name || "User";
   const today = format(new Date(), "M월 d일");
 
-  // 오늘의 청취 시간을 가져오는 함수
   const fetchTodayStats = async () => {
     try {
       const response = await fetch(`/api/stats/today`, {
@@ -60,12 +59,10 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
     }
   };
 
-  // 오늘의 청취 시간은 컴포넌트 마운트 시 한 번만 가져옴
   useEffect(() => {
     fetchTodayStats();
   }, [accessToken, refreshToken]);
 
-  // 기간별 통계는 기존대로 period가 변경될 때마다 가져옴
   useEffect(() => {
     const fetchStats = async () => {
       try {
