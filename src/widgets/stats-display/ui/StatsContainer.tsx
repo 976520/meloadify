@@ -8,6 +8,7 @@ import { TimeRangeSelector } from "@/features/time-range-selector";
 import { format } from "date-fns";
 import { formatDuration } from "@/shared/lib/format";
 import styled from "styled-components";
+import { theme } from "@/shared/styles/theme";
 import { toast } from "sonner";
 
 const ListeningTimeMessage = styled.div`
@@ -15,6 +16,10 @@ const ListeningTimeMessage = styled.div`
   color: ${({ theme }) => theme.colors.white};
   text-align: center;
   margin-bottom: ${({ theme }) => theme.spacing.xl};
+`;
+
+const TimeSpan = styled.span`
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
 interface StatsContainerProps {
@@ -26,6 +31,19 @@ interface StatsContainerProps {
     image?: string | null;
   };
 }
+
+const formatTimeInMinutesAndSeconds = (milliseconds: number) => {
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return (
+    <>
+      <TimeSpan>
+        {minutes}분 {seconds}초
+      </TimeSpan>
+    </>
+  );
+};
 
 export function StatsContainer({ accessToken, refreshToken, user }: StatsContainerProps) {
   const [period, setPeriod] = useState<"4주" | "6개월" | "전체">("4주");
@@ -105,7 +123,8 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
     <div className="container mx-auto px-4 py-8">
       {todayStats && (
         <ListeningTimeMessage>
-          {today}. {userName}님은 spotify를 {formatDuration(todayStats.totalListeningTime)} 들었습니다.
+          {today}, {userName}님은 spotify를{" "}
+          <TimeSpan>{formatTimeInMinutesAndSeconds(todayStats.totalListeningTime)}</TimeSpan> 들었습니다.
         </ListeningTimeMessage>
       )}
       <TimeRangeSelector onSelect={setPeriod} selectedRange={period} />
