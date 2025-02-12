@@ -47,7 +47,7 @@ const InfoSection = styled.div`
   padding: 0 ${({ theme }) => theme.spacing.sm};
 `;
 
-const ArtistName = styled.h3`
+const ArtistName = styled.a`
   font-size: 1.1rem;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.white};
@@ -55,6 +55,12 @@ const ArtistName = styled.h3`
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const GenreText = styled.p`
@@ -100,7 +106,9 @@ export function ArtistCard({ artist, index }: ArtistCardProps) {
         />
       </ImageWrapper>
       <InfoSection>
-        <ArtistName>{artist.name}</ArtistName>
+        <ArtistName href={artist.external_urls.spotify} target="_blank" rel="noopener noreferrer">
+          {artist.name}
+        </ArtistName>
         <GenreText>{artist.genres.slice(0, 3).join(", ")}</GenreText>
         <PopularityBar>
           <PopularityFill width={artist.popularity} />

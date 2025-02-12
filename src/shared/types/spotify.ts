@@ -39,6 +39,9 @@ export interface SpotifyArtist {
   images: SpotifyImage[];
   genres: string[];
   popularity: number;
+  external_urls: {
+    spotify: string;
+  };
 }
 
 export interface UserTopItems {
