@@ -35,7 +35,7 @@ const handler = NextAuth({
           token.expiresAt = Math.floor(Date.now() / 1000 + refreshedTokens.body.expires_in);
         } catch (error) {
           console.error("Error refreshing access token", error);
-          return null;
+          return token;
         }
       }
       return token;
