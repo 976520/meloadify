@@ -5,7 +5,17 @@ import { useEffect, useState } from "react";
 import type { ListeningStats } from "@/shared/types/spotify";
 import { StatsDisplay } from "./StatsDisplay";
 import { TimeRangeSelector } from "@/features/time-range-selector";
+import { format } from "date-fns";
+import { formatDuration } from "@/shared/lib/format";
+import styled from "styled-components";
 import { toast } from "sonner";
+
+const ListeningTimeMessage = styled.div`
+  font-size: 1.25rem;
+  color: ${({ theme }) => theme.colors.white};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+`;
 
 interface StatsContainerProps {
   accessToken: string;
@@ -22,6 +32,9 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
   const [stats, setStats] = useState<ListeningStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const userName = user?.name || "User";
+  const today = format(new Date(), "M월 d일");
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -63,6 +76,11 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {!loading && stats && (
+        <ListeningTimeMessage>
+          {today}. {userName}님은 spotify를 {formatDuration(stats.totalListeningTime)} 들었습니다.
+        </ListeningTimeMessage>
+      )}
       <TimeRangeSelector onSelect={setPeriod} selectedRange={period} />
       {error ? (
         <div className="text-center p-4 text-red-500">{error}</div>

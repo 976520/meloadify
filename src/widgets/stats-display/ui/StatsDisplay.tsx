@@ -6,8 +6,6 @@ import type { ListeningStats } from "@/shared/types/spotify";
 import { StatCard } from "@/shared/ui/stat-card";
 import { TimeRange } from "@/features/time-range-selector/model/types";
 import { TrackList } from "@/entities/track";
-import { format } from "date-fns";
-import { formatDuration } from "@/shared/lib/format";
 import styled from "styled-components";
 import { theme } from "@/shared/styles/theme";
 
@@ -50,13 +48,6 @@ const LoadingWrapper = styled.div`
   }
 `;
 
-const ListeningTimeMessage = styled.div`
-  font-size: 1.25rem;
-  color: ${({ theme }) => theme.colors.white};
-  text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
-
 interface StatsDisplayProps {
   stats: ListeningStats | null;
   loading: boolean;
@@ -69,9 +60,6 @@ interface StatsDisplayProps {
 }
 
 export function StatsDisplay({ stats, loading, period, user }: StatsDisplayProps) {
-  const userName = user?.name || "User";
-  const today = format(new Date(), "M월 d일");
-
   if (loading) {
     return (
       <LoadingWrapper>
@@ -86,10 +74,6 @@ export function StatsDisplay({ stats, loading, period, user }: StatsDisplayProps
 
   return (
     <StatsGrid>
-      <ListeningTimeMessage>
-        {today}. {userName}님은 spotify를 {formatDuration(stats.totalListeningTime)} 들었습니다.
-      </ListeningTimeMessage>
-
       <StatsSection>
         <TopItemsGrid>
           <div>
