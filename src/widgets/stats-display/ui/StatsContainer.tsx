@@ -10,9 +10,14 @@ import { toast } from "sonner";
 interface StatsContainerProps {
   accessToken: string;
   refreshToken?: string;
+  user: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
 }
 
-export function StatsContainer({ accessToken, refreshToken }: StatsContainerProps) {
+export function StatsContainer({ accessToken, refreshToken, user }: StatsContainerProps) {
   const [period, setPeriod] = useState<"4주" | "6개월" | "전체">("4주");
   const [stats, setStats] = useState<ListeningStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,7 +67,7 @@ export function StatsContainer({ accessToken, refreshToken }: StatsContainerProp
       {error ? (
         <div className="text-center p-4 text-red-500">{error}</div>
       ) : (
-        <StatsDisplay stats={stats} loading={loading} period={period} />
+        <StatsDisplay stats={stats} loading={loading} period={period} user={user} />
       )}
     </div>
   );

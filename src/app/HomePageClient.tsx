@@ -30,7 +30,7 @@ export function HomePageClient({ user, accessToken }: HomePageClientProps) {
     <MainContent>
       <Header user={user} />
       <ContentContainer>
-        <StatsContainer accessToken={accessToken} />
+        <StatsContainer accessToken={accessToken} user={user} />
       </ContentContainer>
     </MainContent>
   );

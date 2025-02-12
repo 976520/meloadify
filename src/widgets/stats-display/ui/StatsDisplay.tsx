@@ -10,7 +10,6 @@ import { format } from "date-fns";
 import { formatDuration } from "@/shared/lib/format";
 import styled from "styled-components";
 import { theme } from "@/shared/styles/theme";
-import { useSession } from "next-auth/react";
 
 const StatsGrid = styled.div`
   display: grid;
@@ -62,11 +61,15 @@ interface StatsDisplayProps {
   stats: ListeningStats | null;
   loading: boolean;
   period: TimeRange;
+  user: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
 }
 
-export function StatsDisplay({ stats, loading, period }: StatsDisplayProps) {
-  const { data: session } = useSession();
-  const userName = session?.user?.name || "User";
+export function StatsDisplay({ stats, loading, period, user }: StatsDisplayProps) {
+  const userName = user?.name || "User";
   const today = format(new Date(), "M월 d일");
 
   if (loading) {
