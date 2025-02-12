@@ -8,9 +8,10 @@ import { TimeRangeSelector } from "@/features/time-range-selector";
 
 interface StatsContainerProps {
   accessToken: string;
+  refreshToken?: string;
 }
 
-export function StatsContainer({ accessToken }: StatsContainerProps) {
+export function StatsContainer({ accessToken, refreshToken }: StatsContainerProps) {
   const [period, setPeriod] = useState<"4주" | "6개월" | "전체">("4주");
   const [stats, setStats] = useState<ListeningStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,6 +26,7 @@ export function StatsContainer({ accessToken }: StatsContainerProps) {
         const response = await fetch(`/api/stats?period=${encodeURIComponent(period)}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            "Refresh-Token": refreshToken || "",
             "Content-Type": "application/json",
           },
         });
@@ -46,7 +48,7 @@ export function StatsContainer({ accessToken }: StatsContainerProps) {
     };
 
     fetchStats();
-  }, [period, accessToken]);
+  }, [period, accessToken, refreshToken]);
 
   return (
     <div className="container mx-auto px-4 py-8">

@@ -124,8 +124,9 @@ export class SpotifyClient {
   }
 
   async getListeningStats(period: "4주" | "6개월" | "전체"): Promise<ListeningStats> {
-    await this.refreshAccessTokenIfNeeded();
     try {
+      await this.refreshAccessTokenIfNeeded();
+
       const now = new Date();
       let startDate: Date;
       let endDate = now;

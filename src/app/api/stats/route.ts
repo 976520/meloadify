@@ -25,6 +25,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(stats);
     } catch (error) {
       console.error("Spotify API Error:", error);
+
+      if (error instanceof Error && error.message.includes("token expired")) {
+        return NextResponse.json({ error: "Token expired" }, { status: 401 });
+      }
+
       return NextResponse.json(
         {
           error: "Failed to fetch data from Spotify API",
