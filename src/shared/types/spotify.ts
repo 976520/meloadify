@@ -53,7 +53,7 @@ export interface ListeningStats {
   totalListeningTime: number;
   topTracks: SpotifyTrack[];
   topArtists: SpotifyArtist[];
-  period: "4주" | "6개월" | "전체";
+  period: "4주" | "6개월" | "전체" | "오늘";
   startDate: string;
   endDate: string;
 }

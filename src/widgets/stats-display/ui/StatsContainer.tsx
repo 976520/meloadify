@@ -30,12 +30,42 @@ interface StatsContainerProps {
 export function StatsContainer({ accessToken, refreshToken, user }: StatsContainerProps) {
   const [period, setPeriod] = useState<"4주" | "6개월" | "전체">("4주");
   const [stats, setStats] = useState<ListeningStats | null>(null);
+  const [todayStats, setTodayStats] = useState<ListeningStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const userName = user?.name || "User";
   const today = format(new Date(), "M월 d일");
 
+  // 오늘의 청취 시간을 가져오는 함수
+  const fetchTodayStats = async () => {
+    try {
+      const response = await fetch(`/api/stats/today`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Refresh-Token": refreshToken || "",
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || errorData.details || `HTTP 이슈! (${response.status})`);
+      }
+
+      const data = await response.json();
+      setTodayStats(data);
+    } catch (error) {
+      console.error("오늘의 청취 시간을 가져오는데 실패했습니다:", error);
+    }
+  };
+
+  // 오늘의 청취 시간은 컴포넌트 마운트 시 한 번만 가져옴
+  useEffect(() => {
+    fetchTodayStats();
+  }, [accessToken, refreshToken]);
+
+  // 기간별 통계는 기존대로 period가 변경될 때마다 가져옴
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -76,9 +106,9 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {!loading && stats && (
+      {todayStats && (
         <ListeningTimeMessage>
-          {today}. {userName}님은 spotify를 {formatDuration(stats.totalListeningTime)} 들었습니다.
+          {today}. {userName}님은 spotify를 {formatDuration(todayStats.totalListeningTime)} 들었습니다.
         </ListeningTimeMessage>
       )}
       <TimeRangeSelector onSelect={setPeriod} selectedRange={period} />
