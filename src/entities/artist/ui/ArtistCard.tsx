@@ -52,7 +52,9 @@ const ArtistName = styled.h3`
   font-weight: 600;
   color: ${({ theme }) => theme.colors.white};
   margin-bottom: 4px;
-  truncate: true;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
 
 const GenreText = styled.p`
@@ -60,7 +62,9 @@ const GenreText = styled.p`
   color: ${({ theme }) => theme.colors.lightGrey};
   opacity: 0.8;
   margin-bottom: 6px;
-  truncate: true;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
 
 const PopularityBar = styled.div`

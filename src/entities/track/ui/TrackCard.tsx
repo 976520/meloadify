@@ -52,14 +52,18 @@ const TrackName = styled.h3`
   font-weight: 600;
   color: ${({ theme }) => theme.colors.white};
   margin-bottom: 4px;
-  truncate: true;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
 
 const ArtistName = styled.p`
   font-size: 0.9rem;
   color: ${({ theme }) => theme.colors.lightGrey};
   opacity: 0.8;
-  truncate: true;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
 
 const AudioPlayer = styled.audio`
