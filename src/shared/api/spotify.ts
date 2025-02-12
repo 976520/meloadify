@@ -69,22 +69,19 @@ export class SpotifyClient {
 
         if (tracks.length === 0) break;
 
-        const validTracks = tracks.filter((item) => {
-          const isValid = item.track && typeof item.track.duration_ms === "number" && item.track.duration_ms > 0;
-          return isValid;
-        });
-
-        allTracks = [...allTracks, ...validTracks];
+        allTracks = [...allTracks, ...tracks];
         console.log("total:", allTracks.length);
 
         const lastTrack = tracks[tracks.length - 1];
         const lastPlayedAt = Math.floor(new Date(lastTrack.played_at).getTime() / 1000);
 
-        if (lastPlayedAt >= currentBefore) break;
+        if (lastPlayedAt >= currentBefore || tracks.length < limit) {
+          break;
+        }
 
         currentBefore = lastPlayedAt;
 
-        if (tracks.length < limit || allTracks.length >= 500) {
+        if (allTracks.length >= 500) {
           break;
         }
 
@@ -94,7 +91,7 @@ export class SpotifyClient {
       return allTracks;
     } catch (error) {
       console.error(error);
-      return [];
+      throw error;
     }
   }
 
