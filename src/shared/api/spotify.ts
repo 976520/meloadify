@@ -59,7 +59,7 @@ export class SpotifyClient {
       while (true) {
         const response = await this.client.getMyRecentlyPlayedTracks({
           limit,
-          before: Math.floor(currentBefore / 1000),
+          before: currentBefore,
         });
 
         const tracks = response.body.items;
@@ -144,8 +144,7 @@ export class SpotifyClient {
 
         const filteredTracks = recentTracks.filter((track) => {
           const playedAt = new Date(track.played_at);
-          const isInRange = playedAt >= startDate && playedAt <= endDate;
-          return isInRange;
+          return playedAt >= startDate && playedAt <= endDate;
         });
 
         const totalListeningTime = filteredTracks.reduce((acc, track) => {
@@ -157,7 +156,7 @@ export class SpotifyClient {
         }, 0);
 
         return {
-          totalListeningTime,
+          totalListeningTime: Math.round(totalListeningTime),
           topTracks: topTracks || [],
           topArtists: topArtists || [],
           period,
