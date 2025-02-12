@@ -55,7 +55,7 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
       const data = await response.json();
       setTodayStats(data);
     } catch (error) {
-      console.error("오늘의 청취 시간을 가져오는데 실패했습니다:", error);
+      console.error(error);
     }
   };
 
