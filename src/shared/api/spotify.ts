@@ -128,25 +128,8 @@ export class SpotifyClient {
       await this.refreshAccessTokenIfNeeded();
 
       const now = new Date();
-      let startDate: Date;
-      let endDate = now;
-
-      switch (period) {
-        case "4주":
-          startDate = subWeeks(now, 4);
-          break;
-        case "6개월":
-          startDate = subMonths(now, 6);
-          break;
-        case "전체":
-          startDate = subYears(now, 1);
-          break;
-        default:
-          throw new Error("기간 설정에 실패했어요");
-      }
-
-      startDate = startOfDay(startDate);
-      endDate = now;
+      const startDate = startOfDay(now);
+      const endDate = now;
 
       const timeRange = this.getTimeRange(period);
 
