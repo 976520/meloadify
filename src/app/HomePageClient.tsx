@@ -9,7 +9,7 @@ const MainContent = styled.main`
   min-height: 100vh;
   background: linear-gradient(180deg, #191414 0%, #000000 100%);
   color: ${({ theme }) => theme.colors.white};
-  padding-bottom: 80px; // Add padding to prevent content from being hidden behind footer
+  padding-bottom: 80px;
 `;
 
 const ContentContainer = styled.div`
