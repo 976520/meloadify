@@ -1,17 +1,5 @@
 import type { ListeningStats, SpotifyArtist, SpotifyTrack } from "../types/spotify";
-import {
-  endOfDay,
-  endOfMonth,
-  endOfWeek,
-  endOfYear,
-  startOfDay,
-  startOfMonth,
-  startOfWeek,
-  startOfYear,
-  subMonths,
-  subWeeks,
-  subYears,
-} from "date-fns";
+import { startOfDay, subMonths, subWeeks, subYears } from "date-fns";
 
 import { SPOTIFY_CONFIG } from "../config/spotify";
 import SpotifyWebApi from "spotify-web-api-node";
@@ -31,13 +19,13 @@ export class SpotifyClient {
   private async getRecentlyPlayed(before: number): Promise<SpotifyApi.PlayHistoryObject[]> {
     let allTracks: SpotifyApi.PlayHistoryObject[] = [];
     let currentBefore = before;
-    const limit = 50; // Spotify API 최대 제한
+    const limit = 50;
 
     try {
       while (true) {
         const response = await this.client.getMyRecentlyPlayedTracks({
           limit,
-          before: Math.floor(currentBefore / 1000), // Unix timestamp로 변환
+          before: Math.floor(currentBefore / 1000),
         });
 
         const tracks = response.body.items;
@@ -51,21 +39,17 @@ export class SpotifyClient {
 
         allTracks = [...allTracks, ...validTracks];
 
-        // 마지막 트랙의 재생 시간을 다음 요청의 before로 사용
         const lastTrack = tracks[tracks.length - 1];
         const lastPlayedAt = new Date(lastTrack.played_at).getTime();
 
-        // 이전 before와 같다면 무한 루프 방지를 위해 중단
         if (lastPlayedAt >= currentBefore) break;
 
         currentBefore = lastPlayedAt;
 
-        // 충분한 데이터를 수집했거나 API 제한에 도달했다면 중단
         if (tracks.length < limit || allTracks.length >= 500) {
           break;
         }
 
-        // API 호출 간 짧은 지연 추가
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
@@ -131,7 +115,6 @@ export class SpotifyClient {
       const timeRange = this.getTimeRange(period);
 
       try {
-        // 현재 시간을 밀리초로 변환하여 전달
         const currentTime = endDate.getTime();
 
         const [recentTracks, topTracks, topArtists] = await Promise.all([
