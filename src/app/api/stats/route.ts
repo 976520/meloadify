@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { SpotifyClient } from "@/shared/api/spotify";
 import type { TimeRange } from "@/features/time-range-selector/model/types";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;

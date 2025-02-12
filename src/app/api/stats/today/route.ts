@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { SpotifyClient } from "@/shared/api/spotify";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const accessToken = request.headers.get("Authorization")?.replace("Bearer ", "");

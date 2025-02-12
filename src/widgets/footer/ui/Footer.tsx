@@ -5,11 +5,11 @@ import Link from "next/link";
 import styled from "styled-components";
 
 const FooterWrapper = styled.footer`
-  bottom: 0;
   width: 100%;
   z-index: 50;
   background: rgba(18, 18, 18, 0.9);
   backdrop-filter: blur(8px);
+  margin-top: auto;
 `;
 
 const FooterContainer = styled.div`

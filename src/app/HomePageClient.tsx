@@ -9,13 +9,15 @@ const MainContent = styled.main`
   min-height: 100vh;
   background: linear-gradient(180deg, #191414 0%, #000000 100%);
   color: ${({ theme }) => theme.colors.white};
-  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const ContentContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing.xl};
+  flex: 1;
 `;
 
 interface HomePageClientProps {
