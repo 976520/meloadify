@@ -52,17 +52,20 @@ export class SpotifyClient {
 
   private async getRecentlyPlayed(before: number): Promise<SpotifyApi.PlayHistoryObject[]> {
     let allTracks: SpotifyApi.PlayHistoryObject[] = [];
-    let currentBefore = before;
+    let currentBefore = Math.floor(before / 1000);
     const limit = 50;
 
     try {
       while (true) {
+        console.log("before:", new Date(currentBefore * 1000).toISOString());
+
         const response = await this.client.getMyRecentlyPlayedTracks({
           limit,
           before: currentBefore,
         });
 
         const tracks = response.body.items;
+        console.log("count:", tracks.length);
 
         if (tracks.length === 0) break;
 
@@ -72,9 +75,10 @@ export class SpotifyClient {
         });
 
         allTracks = [...allTracks, ...validTracks];
+        console.log("total:", allTracks.length);
 
         const lastTrack = tracks[tracks.length - 1];
-        const lastPlayedAt = new Date(lastTrack.played_at).getTime();
+        const lastPlayedAt = Math.floor(new Date(lastTrack.played_at).getTime() / 1000);
 
         if (lastPlayedAt >= currentBefore) break;
 

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const client = new SpotifyClient(accessToken, refreshToken || undefined);
 
     try {
-      const stats = await client.getListeningStats("4주"); // period는 상관없음, 오늘 데이터만 사용
+      const stats = await client.getListeningStats("4주");
       return NextResponse.json(stats);
     } catch (error) {
       console.error(error);
