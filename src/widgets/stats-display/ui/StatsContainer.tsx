@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { ListeningStats } from "@/shared/types/spotify";
 import { StatsDisplay } from "./StatsDisplay";
 import { TimeRangeSelector } from "@/features/time-range-selector";
+import { toast } from "sonner";
 
 interface StatsContainerProps {
   accessToken: string;
@@ -33,14 +34,19 @@ export function StatsContainer({ accessToken, refreshToken }: StatsContainerProp
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || errorData.details || `HTTP 이슈! (${response.status})`);
+          const errorMessage = errorData.error || errorData.details || `HTTP 이슈! (${response.status})`;
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
         setStats(data);
       } catch (error) {
         console.error(error);
-        setError(error instanceof Error ? error.message : "데이터를 불러오는데 실패했어요");
+        const errorMessage = error instanceof Error ? error.message : "데이터를 불러오는데 실패했어요";
+        setError(errorMessage);
+        toast.error(errorMessage, {
+          duration: 4000,
+        });
         setStats(null);
       } finally {
         setLoading(false);

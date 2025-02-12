@@ -8,6 +8,7 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import StyledComponentsRegistry from "@/shared/lib/registry";
 import { ThemeProvider } from "styled-components";
+import { Toaster } from "sonner";
 import { theme } from "@/shared/styles/theme";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider theme={theme}>
             <GlobalStyle />
             <Analytics />
+            <Toaster position="top-right" theme="dark" richColors closeButton />
             {children}
           </ThemeProvider>
         </StyledComponentsRegistry>
