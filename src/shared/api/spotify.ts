@@ -21,7 +21,7 @@ export class SpotifyClient {
 
   private async refreshAccessToken() {
     if (!this.refreshToken) {
-      throw new Error("No refresh token available");
+      throw new Error("토큰이 없어요 ");
     }
 
     try {
@@ -32,8 +32,8 @@ export class SpotifyClient {
 
       return access_token;
     } catch (error) {
-      console.error("Error refreshing access token:", error);
-      throw new Error("Failed to refresh access token");
+      console.error(error);
+      throw new Error("토큰 갱신이 실패했어요");
     }
   }
 
@@ -41,7 +41,7 @@ export class SpotifyClient {
     try {
       await this.client.getMe();
     } catch (error) {
-      if (error instanceof Error && error.message.includes("The access token expired")) {
+      if (error instanceof Error && error.message.includes("토큰이 만료되었어요")) {
         const newAccessToken = await this.refreshAccessToken();
         this.client.setAccessToken(newAccessToken);
       } else {
@@ -89,7 +89,7 @@ export class SpotifyClient {
 
       return allTracks;
     } catch (error) {
-      console.error("Error fetching recently played tracks:", error);
+      console.error(error);
       return [];
     }
   }
@@ -142,7 +142,7 @@ export class SpotifyClient {
           startDate = subYears(now, 1);
           break;
         default:
-          throw new Error("Invalid period");
+          throw new Error("기간 설정에 실패했어요");
       }
 
       startDate = startOfDay(startDate);
@@ -182,11 +182,11 @@ export class SpotifyClient {
           endDate: endDate.toISOString(),
         };
       } catch (error) {
-        console.error("API call error:", error);
-        throw new Error("Failed to fetch data from Spotify API");
+        console.error(error);
+        throw new Error("데이터를 불러오는데 실패했어요");
       }
     } catch (error) {
-      console.error("Error in getListeningStats:", error);
+      console.error(error);
       throw error;
     }
   }

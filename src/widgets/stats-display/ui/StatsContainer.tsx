@@ -33,14 +33,14 @@ export function StatsContainer({ accessToken, refreshToken }: StatsContainerProp
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || errorData.details || `HTTP error! status: ${response.status}`);
+          throw new Error(errorData.error || errorData.details || `HTTP 이슈! (${response.status})`);
         }
 
         const data = await response.json();
         setStats(data);
       } catch (error) {
-        console.error("Stats fetch error:", error);
-        setError(error instanceof Error ? error.message : "Failed to fetch stats");
+        console.error(error);
+        setError(error instanceof Error ? error.message : "데이터를 불러오는데 실패했어요");
         setStats(null);
       } finally {
         setLoading(false);
