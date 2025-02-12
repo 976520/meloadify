@@ -2,10 +2,10 @@
 
 import { ArtistList } from "@/entities/artist";
 import type { ListeningStats } from "@/shared/types/spotify";
-import { Spinner } from "basic-loading";
 import { StatCard } from "@/shared/ui/stat-card";
 import { TimeRange } from "@/features/time-range-selector/model/types";
 import { TrackList } from "@/entities/track";
+import { Wave } from "basic-loading";
 import { formatDuration } from "@/shared/lib/format";
 import styled from "styled-components";
 import { theme } from "@/shared/styles/theme";
@@ -59,7 +59,7 @@ export function StatsDisplay({ stats, loading, period }: StatsDisplayProps) {
   if (loading) {
     return (
       <LoadingWrapper>
-        <Spinner option={{ bgColor: theme.colors.primary, barColor: theme.colors.lightGrey, size: 50 }} />
+        <Wave option={{ color: theme.colors.primary, size: 50 }} />
       </LoadingWrapper>
     );
   }
