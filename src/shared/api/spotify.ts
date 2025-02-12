@@ -131,43 +131,53 @@ export class SpotifyClient {
       const now = new Date();
       const startDate = startOfDay(now);
       const endDate = now;
+      console.log("start:", startDate.toISOString());
+      console.log("end:", endDate.toISOString());
 
       const timeRange = this.getTimeRange(period);
+      const currentTime = endDate.getTime();
 
-      try {
-        const currentTime = endDate.getTime();
+      const [recentTracks, topTracks, topArtists] = await Promise.all([
+        this.getRecentlyPlayed(currentTime),
+        this.getTopTracks(timeRange, 10),
+        this.getTopArtists(timeRange, 10),
+      ]);
 
-        const [recentTracks, topTracks, topArtists] = await Promise.all([
-          this.getRecentlyPlayed(currentTime),
-          this.getTopTracks(timeRange, 10),
-          this.getTopArtists(timeRange, 10),
-        ]);
+      console.log("total:", recentTracks.length);
 
-        const filteredTracks = recentTracks.filter((track) => {
-          const playedAt = new Date(track.played_at);
-          return playedAt >= startDate && playedAt <= endDate;
-        });
+      const filteredTracks = recentTracks.filter((track) => {
+        const playedAt = new Date(track.played_at);
+        const isInRange = playedAt >= startDate && playedAt <= endDate;
+        if (isInRange) {
+          console.log("today:", {
+            name: track.track?.name,
+            playedAt: playedAt.toISOString(),
+            duration: track.track?.duration_ms,
+          });
+        }
+        return isInRange;
+      });
 
-        const totalListeningTime = filteredTracks.reduce((acc, track) => {
-          const duration = track.track?.duration_ms;
-          if (duration && duration > 0) {
-            return acc + duration;
-          }
-          return acc;
-        }, 0);
+      console.log("today:", filteredTracks.length);
 
-        return {
-          totalListeningTime: Math.round(totalListeningTime),
-          topTracks: topTracks || [],
-          topArtists: topArtists || [],
-          period,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-        };
-      } catch (error) {
-        console.error(error);
-        throw new Error("데이터를 불러오는데 실패했어요");
-      }
+      const totalListeningTime = filteredTracks.reduce((acc, track) => {
+        const duration = track.track?.duration_ms;
+        if (duration && duration > 0) {
+          return acc + duration;
+        }
+        return acc;
+      }, 0);
+
+      console.log("total:", totalListeningTime);
+
+      return {
+        totalListeningTime,
+        topTracks: topTracks || [],
+        topArtists: topArtists || [],
+        period,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+      };
     } catch (error) {
       console.error(error);
       throw error;
