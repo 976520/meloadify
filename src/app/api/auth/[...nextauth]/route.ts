@@ -1,7 +1,21 @@
+import { JWT, Session } from "next-auth";
+
 import NextAuth from "next-auth";
 import { SPOTIFY_CONFIG } from "@/shared/config/spotify";
 import SpotifyProvider from "next-auth/providers/spotify";
 import SpotifyWebApi from "spotify-web-api-node";
+
+declare module "next-auth" {
+  interface Session {
+    accessToken?: string;
+    refreshToken?: string;
+  }
+  interface JWT {
+    accessToken?: string;
+    refreshToken?: string;
+    expiresAt?: number;
+  }
+}
 
 const handler = NextAuth({
   providers: [
@@ -40,7 +54,7 @@ const handler = NextAuth({
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
         session.accessToken = token.accessToken;
         session.refreshToken = token.refreshToken;
