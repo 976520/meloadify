@@ -131,8 +131,6 @@ export class SpotifyClient {
       const now = new Date();
       const startDate = startOfDay(now);
       const endDate = now;
-      console.log("start:", startDate.toISOString());
-      console.log("end:", endDate.toISOString());
 
       const timeRange = this.getTimeRange(period);
       const currentTime = endDate.getTime();
@@ -143,35 +141,15 @@ export class SpotifyClient {
         this.getTopArtists(timeRange, 10),
       ]);
 
-      console.log("total:", recentTracks.length);
-
       const filteredTracks = recentTracks.filter((track) => {
         const playedAt = new Date(track.played_at);
-        const isInRange = playedAt >= startDate && playedAt <= endDate;
-        if (isInRange) {
-          console.log("today:", {
-            name: track.track?.name,
-            playedAt: playedAt.toISOString(),
-            duration: track.track?.duration_ms,
-          });
-        }
-        return isInRange;
+        return playedAt >= startDate && playedAt <= endDate;
       });
 
-      console.log("today:", filteredTracks.length);
-
-      const totalListeningTime = filteredTracks.reduce((acc, track) => {
-        const duration = track.track?.duration_ms;
-        if (duration && duration > 0) {
-          return acc + duration;
-        }
-        return acc;
-      }, 0);
-
-      console.log("total:", totalListeningTime);
+      console.log("tracks:", filteredTracks.length);
 
       return {
-        totalListeningTime,
+        totalListeningTime: filteredTracks.length,
         topTracks: topTracks || [],
         topArtists: topArtists || [],
         period,

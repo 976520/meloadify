@@ -18,7 +18,7 @@ const ListeningTimeMessage = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
-const TimeSpan = styled.span`
+const Span = styled.span`
   color: ${({ theme }) => theme.colors.primary};
 `;
 
@@ -32,15 +32,8 @@ interface StatsContainerProps {
   };
 }
 
-const formatTimeInMinutesAndSeconds = (milliseconds: number) => {
-  const totalSeconds = Math.floor(milliseconds / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return (
-    <TimeSpan>
-      {minutes}분 {seconds}초
-    </TimeSpan>
-  );
+const formatTrackCount = (count: number) => {
+  return <Span>{count}곡</Span>;
 };
 
 export function StatsContainer({ accessToken, refreshToken, user }: StatsContainerProps) {
@@ -122,7 +115,7 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
     <div className="container mx-auto px-4 py-8">
       {todayStats && (
         <ListeningTimeMessage>
-          {today}, {userName}님은 spotify를 {formatTimeInMinutesAndSeconds(todayStats.totalListeningTime)} 들었습니다.
+          {today}, {userName}님은 spotify에서 {formatTrackCount(todayStats.totalListeningTime)} 을 들었습니다.
         </ListeningTimeMessage>
       )}
       <TimeRangeSelector onSelect={setPeriod} selectedRange={period} />
