@@ -8,6 +8,7 @@ import { TimeRange } from "@/features/time-range-selector/model/types";
 import { TrackList } from "@/entities/track";
 import { formatDuration } from "@/shared/lib/format";
 import styled from "styled-components";
+import { theme } from "@/shared/styles/theme";
 
 const StatsGrid = styled.div`
   display: grid;
@@ -58,7 +59,7 @@ export function StatsDisplay({ stats, loading, period }: StatsDisplayProps) {
   if (loading) {
     return (
       <LoadingWrapper>
-        <Spinner option={{ bgColor: "#1DB954", size: 50 }} />
+        <Spinner option={{ bgColor: theme.colors.primary, barColor: theme.colors.lightGrey, size: 50 }} />
       </LoadingWrapper>
     );
   }
