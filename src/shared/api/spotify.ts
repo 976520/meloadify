@@ -50,45 +50,42 @@ export class SpotifyClient {
     }
   }
 
-  private async getRecentlyPlayed(before: number): Promise<SpotifyApi.PlayHistoryObject[]> {
-    let allTracks: SpotifyApi.PlayHistoryObject[] = [];
-    let currentBefore = Math.floor(before / 1000);
-    const limit = 50;
-
+  private async getRecentlyPlayed(): Promise<SpotifyApi.PlayHistoryObject[]> {
     try {
-      while (true) {
-        console.log("before:", new Date(currentBefore * 1000).toISOString());
+      const response = await this.client.getMyRecentlyPlayedTracks({
+        limit: 50,
+        after: startOfDay(new Date()).getTime(),
+      });
 
-        const response = await this.client.getMyRecentlyPlayedTracks({
-          limit,
-          before: currentBefore,
-        });
+      console.log("API", {
+        tracks: response.body.items.map((item) => ({
+          name: item.track.name,
+          played_at: item.played_at,
+        })),
+      });
 
-        const tracks = response.body.items;
-        console.log("count:", tracks.length);
+      return response.body.items;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 
-        if (tracks.length === 0) break;
+  async getTodayStats(): Promise<ListeningStats> {
+    try {
+      await this.refreshAccessTokenIfNeeded();
 
-        allTracks = [...allTracks, ...tracks];
-        console.log("total:", allTracks.length);
+      const recentTracks = await this.getRecentlyPlayed();
+      console.log(recentTracks.length);
 
-        const lastTrack = tracks[tracks.length - 1];
-        const lastPlayedAt = Math.floor(new Date(lastTrack.played_at).getTime() / 1000);
-
-        if (lastPlayedAt >= currentBefore || tracks.length < limit) {
-          break;
-        }
-
-        currentBefore = lastPlayedAt;
-
-        if (allTracks.length >= 500) {
-          break;
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
-
-      return allTracks;
+      return {
+        totalListeningTime: recentTracks.length,
+        topTracks: [],
+        topArtists: [],
+        period: "4주",
+        startDate: startOfDay(new Date()).toISOString(),
+        endDate: new Date().toISOString(),
+      };
     } catch (error) {
       console.error(error);
       throw error;
@@ -131,22 +128,32 @@ export class SpotifyClient {
       const now = new Date();
       const startDate = startOfDay(now);
       const endDate = now;
+      console.log({ startDate, endDate });
 
       const timeRange = this.getTimeRange(period);
       const currentTime = endDate.getTime();
 
       const [recentTracks, topTracks, topArtists] = await Promise.all([
-        this.getRecentlyPlayed(currentTime),
+        this.getRecentlyPlayed(),
         this.getTopTracks(timeRange, 10),
         this.getTopArtists(timeRange, 10),
       ]);
 
+      console.log(recentTracks.length);
+
       const filteredTracks = recentTracks.filter((track) => {
         const playedAt = new Date(track.played_at);
-        return playedAt >= startDate && playedAt <= endDate;
+        const isInRange = playedAt >= startDate && playedAt <= endDate;
+        if (isInRange) {
+          console.log({
+            name: track.track?.name,
+            playedAt: playedAt.toISOString(),
+          });
+        }
+        return isInRange;
       });
 
-      console.log("tracks:", filteredTracks.length);
+      console.log(filteredTracks.length);
 
       return {
         totalListeningTime: filteredTracks.length,
