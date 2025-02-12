@@ -22,7 +22,7 @@ export function StatsContainer({ accessToken }: StatsContainerProps) {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`/api/stats?period=${period}`, {
+        const response = await fetch(`/api/stats?period=${encodeURIComponent(period)}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
@@ -30,14 +30,14 @@ export function StatsContainer({ accessToken }: StatsContainerProps) {
         });
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+          const errorData = await response.json();
+          throw new Error(errorData.error || errorData.details || `HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         setStats(data);
       } catch (error) {
-        console.error(error);
+        console.error("Stats fetch error:", error);
         setError(error instanceof Error ? error.message : "Failed to fetch stats");
         setStats(null);
       } finally {

@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const period = searchParams.get("period") as TimeRange;
     const accessToken = request.headers.get("Authorization")?.replace("Bearer ", "");
+    const refreshToken = request.headers.get("Refresh-Token");
 
     if (!accessToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,11 +18,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid period" }, { status: 400 });
     }
 
-    const client = new SpotifyClient(accessToken);
-    const stats = await client.getListeningStats(period);
+    const client = new SpotifyClient(accessToken, refreshToken || undefined);
 
-    return NextResponse.json(stats);
+    try {
+      const stats = await client.getListeningStats(period);
+      return NextResponse.json(stats);
+    } catch (error) {
+      console.error("Spotify API Error:", error);
+      return NextResponse.json(
+        {
+          error: "Failed to fetch data from Spotify API",
+          details: error instanceof Error ? error.message : String(error),
+        },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch stats" }, { status: 500 });
+    console.error("Server Error:", error);
+    return NextResponse.json(
+      { error: "Internal server error", details: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
+    );
   }
 }

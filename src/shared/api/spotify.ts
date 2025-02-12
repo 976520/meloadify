@@ -6,14 +6,48 @@ import SpotifyWebApi from "spotify-web-api-node";
 
 export class SpotifyClient {
   private client: SpotifyWebApi;
+  private refreshToken?: string;
 
-  constructor(accessToken: string) {
+  constructor(accessToken: string, refreshToken?: string) {
     this.client = new SpotifyWebApi({
       clientId: SPOTIFY_CONFIG.clientId,
       clientSecret: SPOTIFY_CONFIG.clientSecret,
       redirectUri: SPOTIFY_CONFIG.redirectUri,
       accessToken,
+      refreshToken,
     });
+    this.refreshToken = refreshToken;
+  }
+
+  private async refreshAccessToken() {
+    if (!this.refreshToken) {
+      throw new Error("No refresh token available");
+    }
+
+    try {
+      const data = await this.client.refreshAccessToken();
+      const { access_token } = data.body;
+
+      this.client.setAccessToken(access_token);
+
+      return access_token;
+    } catch (error) {
+      console.error("Error refreshing access token:", error);
+      throw new Error("Failed to refresh access token");
+    }
+  }
+
+  private async refreshAccessTokenIfNeeded() {
+    try {
+      await this.client.getMe();
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("The access token expired")) {
+        const newAccessToken = await this.refreshAccessToken();
+        this.client.setAccessToken(newAccessToken);
+      } else {
+        throw error;
+      }
+    }
   }
 
   private async getRecentlyPlayed(before: number): Promise<SpotifyApi.PlayHistoryObject[]> {
@@ -90,6 +124,7 @@ export class SpotifyClient {
   }
 
   async getListeningStats(period: "4주" | "6개월" | "전체"): Promise<ListeningStats> {
+    await this.refreshAccessTokenIfNeeded();
     try {
       const now = new Date();
       let startDate: Date;
