@@ -35,33 +35,19 @@ export class SpotifyClient {
 
     try {
       while (true) {
-        console.log("Fetching tracks with before:", new Date(currentBefore));
         const response = await this.client.getMyRecentlyPlayedTracks({
           limit,
           before: Math.floor(currentBefore / 1000), // Unix timestamp로 변환
         });
 
         const tracks = response.body.items;
-        console.log("Received tracks count:", tracks.length);
 
         if (tracks.length === 0) break;
 
         const validTracks = tracks.filter((item) => {
           const isValid = item.track && typeof item.track.duration_ms === "number" && item.track.duration_ms > 0;
-          if (!isValid) {
-            console.log("Invalid track:", item);
-          }
           return isValid;
         });
-
-        console.log("Valid tracks count:", validTracks.length);
-        if (validTracks.length > 0) {
-          console.log("Sample track:", {
-            name: validTracks[0]?.track?.name,
-            duration: validTracks[0]?.track?.duration_ms,
-            played_at: validTracks[0]?.played_at,
-          });
-        }
 
         allTracks = [...allTracks, ...validTracks];
 
@@ -76,7 +62,6 @@ export class SpotifyClient {
 
         // 충분한 데이터를 수집했거나 API 제한에 도달했다면 중단
         if (tracks.length < limit || allTracks.length >= 500) {
-          console.log("Reached limit or collected enough tracks");
           break;
         }
 
@@ -84,7 +69,6 @@ export class SpotifyClient {
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
-      console.log("Total tracks collected:", allTracks.length);
       return allTracks;
     } catch (error) {
       console.error("Error fetching recently played tracks:", error);
@@ -144,17 +128,9 @@ export class SpotifyClient {
       startDate = startOfDay(startDate);
       endDate = now;
 
-      console.log("=== Stats Collection Start ===");
-      console.log("Period:", period);
-      console.log("Start date:", startDate.toISOString());
-      console.log("End date:", endDate.toISOString());
-
       const timeRange = this.getTimeRange(period);
-      console.log("Time range:", timeRange);
 
       try {
-        console.log("Fetching data from Spotify API...");
-
         // 현재 시간을 밀리초로 변환하여 전달
         const currentTime = endDate.getTime();
 
@@ -164,27 +140,11 @@ export class SpotifyClient {
           this.getTopArtists(timeRange, 10),
         ]);
 
-        console.log("Recent tracks received:", recentTracks.length);
-        console.log("Top tracks received:", topTracks.length);
-        console.log("Top artists received:", topArtists.length);
-
         const filteredTracks = recentTracks.filter((track) => {
           const playedAt = new Date(track.played_at);
           const isInRange = playedAt >= startDate && playedAt <= endDate;
-
-          if (!isInRange) {
-            console.log("Track outside range:", {
-              name: track.track?.name,
-              played_at: playedAt.toISOString(),
-              startDate: startDate.toISOString(),
-              endDate: endDate.toISOString(),
-            });
-          }
-
           return isInRange;
         });
-
-        console.log("Filtered tracks:", filteredTracks.length);
 
         const totalListeningTime = filteredTracks.reduce((acc, track) => {
           const duration = track.track?.duration_ms;
@@ -193,10 +153,6 @@ export class SpotifyClient {
           }
           return acc;
         }, 0);
-
-        console.log("=== Final Results ===");
-        console.log("Total listening time (ms):", totalListeningTime);
-        console.log("Total listening time (min):", totalListeningTime / (1000 * 60));
 
         return {
           totalListeningTime,

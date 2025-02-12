@@ -2,6 +2,7 @@
 
 import { ArtistList } from "@/entities/artist";
 import type { ListeningStats } from "@/shared/types/spotify";
+import { Spinner } from "basic-loading";
 import { StatCard } from "@/shared/ui/stat-card";
 import { TimeRange } from "@/features/time-range-selector/model/types";
 import { TrackList } from "@/entities/track";
@@ -36,13 +37,15 @@ const SectionTitle = styled.h2`
   margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
-const LoadingContainer = styled.div`
+const LoadingWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 200px;
-  color: ${({ theme }) => theme.colors.lightGrey};
-  font-size: 1.125rem;
+  min-height: 400px;
+
+  .basic-loading {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 interface StatsDisplayProps {
@@ -53,11 +56,15 @@ interface StatsDisplayProps {
 
 export function StatsDisplay({ stats, loading, period }: StatsDisplayProps) {
   if (loading) {
-    return <LoadingContainer>로딩중이에요...</LoadingContainer>;
+    return (
+      <LoadingWrapper>
+        <Spinner option={{ bgColor: "#1DB954", size: 50 }} />
+      </LoadingWrapper>
+    );
   }
 
   if (!stats) {
-    return <LoadingContainer>데이터가 없어요</LoadingContainer>;
+    return <LoadingWrapper>데이터가 없어요</LoadingWrapper>;
   }
 
   return (
