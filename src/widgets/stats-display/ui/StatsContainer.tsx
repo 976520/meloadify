@@ -37,11 +37,9 @@ const formatTimeInMinutesAndSeconds = (milliseconds: number) => {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return (
-    <>
-      <TimeSpan>
-        {minutes}분 {seconds}초
-      </TimeSpan>
-    </>
+    <TimeSpan>
+      {minutes}분 {seconds}초
+    </TimeSpan>
   );
 };
 
@@ -71,6 +69,7 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
       }
 
       const data = await response.json();
+      console.log(data);
       setTodayStats(data);
     } catch (error) {
       console.error(error);
@@ -123,8 +122,7 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
     <div className="container mx-auto px-4 py-8">
       {todayStats && (
         <ListeningTimeMessage>
-          {today}, {userName}님은 spotify를{" "}
-          <TimeSpan>{formatTimeInMinutesAndSeconds(todayStats.totalListeningTime)}</TimeSpan> 들었습니다.
+          {today}, {userName}님은 spotify를 {formatTimeInMinutesAndSeconds(todayStats.totalListeningTime)} 들었습니다.
         </ListeningTimeMessage>
       )}
       <TimeRangeSelector onSelect={setPeriod} selectedRange={period} />
