@@ -16,6 +16,9 @@ export interface SpotifyTrack {
   artists: Array<{
     id: string;
     name: string;
+    external_urls: {
+      spotify: string;
+    };
   }>;
   album: {
     id: string;
@@ -25,6 +28,9 @@ export interface SpotifyTrack {
   duration_ms: number;
   preview_url: string | null;
   popularity: number;
+  external_urls: {
+    spotify: string;
+  };
 }
 
 export interface SpotifyArtist {

@@ -47,7 +47,7 @@ const InfoSection = styled.div`
   padding: 0 ${({ theme }) => theme.spacing.sm};
 `;
 
-const TrackName = styled.h3`
+const TrackName = styled.a`
   font-size: 1.1rem;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.white};
@@ -55,11 +55,26 @@ const TrackName = styled.h3`
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const ArtistLink = styled.a`
+  color: ${({ theme }) => theme.colors.lightGrey};
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const ArtistName = styled.p`
   font-size: 0.9rem;
-  color: ${({ theme }) => theme.colors.lightGrey};
   opacity: 0.8;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -96,8 +111,19 @@ export function TrackCard({ track, index }: TrackCardProps) {
         />
       </ImageWrapper>
       <InfoSection>
-        <TrackName>{track.name}</TrackName>
-        <ArtistName>{track.artists.map((artist) => artist.name).join(", ")}</ArtistName>
+        <TrackName href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer">
+          {track.name}
+        </TrackName>
+        <ArtistName>
+          {track.artists.map((artist, i) => (
+            <>
+              {i > 0 && ", "}
+              <ArtistLink key={artist.id} href={artist.external_urls.spotify} target="_blank" rel="noopener noreferrer">
+                {artist.name}
+              </ArtistLink>
+            </>
+          ))}
+        </ArtistName>
       </InfoSection>
       {track.preview_url && <AudioPlayer controls src={track.preview_url} />}
     </Card>
