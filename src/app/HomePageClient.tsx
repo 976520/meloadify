@@ -1,5 +1,6 @@
 "use client";
 
+import { Footer } from "@/widgets/footer";
 import { Header } from "@/widgets/header";
 import { StatsContainer } from "@/widgets/stats-display/ui/StatsContainer";
 import styled from "styled-components";
@@ -8,6 +9,7 @@ const MainContent = styled.main`
   min-height: 100vh;
   background: linear-gradient(180deg, #191414 0%, #000000 100%);
   color: ${({ theme }) => theme.colors.white};
+  padding-bottom: 80px; // Add padding to prevent content from being hidden behind footer
 `;
 
 const ContentContainer = styled.div`
@@ -32,6 +34,7 @@ export function HomePageClient({ user, accessToken }: HomePageClientProps) {
       <ContentContainer>
         <StatsContainer accessToken={accessToken} user={user} />
       </ContentContainer>
+      <Footer />
     </MainContent>
   );
 }
