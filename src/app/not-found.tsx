@@ -43,9 +43,9 @@ const BackLink = styled(Link)`
 export default function NotFound() {
   return (
     <NotFoundContainer>
-      <Title>404 - 페이지를 찾을 수 없습니다</Title>
-      <Message>요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.</Message>
-      <BackLink href="/">홈으로 돌아가기</BackLink>
+      <Title>404</Title>
+      <Message>죄송합니다</Message>
+      <BackLink href="/">돌아가기</BackLink>
     </NotFoundContainer>
   );
 }

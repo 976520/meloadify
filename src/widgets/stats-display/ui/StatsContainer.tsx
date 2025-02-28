@@ -6,9 +6,7 @@ import type { ListeningStats } from "@/shared/types/spotify";
 import { StatsDisplay } from "./StatsDisplay";
 import { TimeRangeSelector } from "@/features/time-range-selector";
 import { format } from "date-fns";
-import { formatDuration } from "@/shared/lib/format";
 import styled from "styled-components";
-import { theme } from "@/shared/styles/theme";
 import { toast } from "sonner";
 
 const ListeningTimeMessage = styled.div`
