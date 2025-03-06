@@ -6,10 +6,10 @@ import type {
   SpotifyTrack,
   StatsPeriodType,
 } from "../types/spotify";
-import { startOfDay, subMonths, subWeeks, subYears } from "date-fns";
 
 import { SPOTIFY_CONFIG } from "../config/spotify";
 import SpotifyWebApi from "spotify-web-api-node";
+import { startOfDay } from "date-fns";
 
 class SpotifyApiError extends Error implements SpotifyError {
   constructor(public readonly status: number, public readonly message: string) {
@@ -45,7 +45,7 @@ export class SpotifyClient {
       this.client.setAccessToken(access_token);
       return access_token;
     } catch (error) {
-      console.error("[SpotifyClient] 토큰 갱신 실패:", error);
+      console.error("토큰 갱신 실패:", error);
       throw new SpotifyApiError(401, "토큰 갱신에 실패했습니다");
     }
   }
@@ -73,7 +73,7 @@ export class SpotifyClient {
 
       return items;
     } catch (error) {
-      console.error("[SpotifyClient] 최근 재생 기록 조회 실패:", error);
+      console.error("최근 재생 기록 조회 실패:", error);
       throw new SpotifyApiError(500, "최근 재생 기록을 가져오는데 실패했습니다");
     }
   }
@@ -88,7 +88,7 @@ export class SpotifyClient {
       } = await this.client.getMyTopTracks({ time_range: timeRange, limit });
       return items;
     } catch (error) {
-      console.error("[SpotifyClient] 인기 트랙 조회 실패:", error);
+      console.error("인기 트랙 조회 실패:", error);
       throw new SpotifyApiError(500, "인기 트랙을 가져오는데 실패했습니다");
     }
   }
@@ -103,7 +103,7 @@ export class SpotifyClient {
       } = await this.client.getMyTopArtists({ time_range: timeRange, limit });
       return items;
     } catch (error) {
-      console.error("[SpotifyClient] 인기 아티스트 조회 실패:", error);
+      console.error("인기 아티스트 조회 실패:", error);
       throw new SpotifyApiError(500, "인기 아티스트를 가져오는데 실패했습니다");
     }
   }
@@ -134,7 +134,7 @@ export class SpotifyClient {
         endDate: endDate.toISOString(),
       };
     } catch (error) {
-      console.error("[SpotifyClient] 오늘의 통계 조회 실패:", error);
+      console.error("오늘의 통계 조회 실패:", error);
       throw error instanceof SpotifyApiError ? error : new SpotifyApiError(500, "통계를 가져오는데 실패했습니다");
     }
   }
@@ -167,7 +167,7 @@ export class SpotifyClient {
         endDate: now.toISOString(),
       };
     } catch (error) {
-      console.error("[SpotifyClient] 청취 통계 조회 실패:", error);
+      console.error("청취 통계 조회 실패:", error);
       throw error instanceof SpotifyApiError ? error : new SpotifyApiError(500, "통계를 가져오는데 실패했습니다");
     }
   }
