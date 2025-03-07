@@ -69,6 +69,14 @@ interface HeaderProps {
 }
 
 export function Header({ user }: HeaderProps) {
+  const handleLogout = async () => {
+    try {
+      await signOut({ callbackUrl: "/login" });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <HeaderWrapper>
       <HeaderContainer>
@@ -77,7 +85,7 @@ export function Header({ user }: HeaderProps) {
           <UserSection>
             {user.image && <UserAvatar src={user.image} alt={user.name || "User"} width={32} height={32} />}
             <UserName>{user.name}</UserName>
-            <LogoutButton onClick={() => signOut()}>로그아웃</LogoutButton>
+            <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
           </UserSection>
         </HeaderContent>
       </HeaderContainer>
