@@ -60,7 +60,6 @@ export function StatsContainer({ accessToken, refreshToken, user }: StatsContain
       }
 
       const data = await response.json();
-      console.log(data);
       setTodayStats(data);
     } catch (error) {
       console.error(error);

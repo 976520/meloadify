@@ -1,4 +1,4 @@
-import NextAuth, { DefaultSession, NextAuthOptions } from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 
 import { SPOTIFY_CONFIG } from "@/shared/config/spotify";
 import SpotifyProvider from "next-auth/providers/spotify";

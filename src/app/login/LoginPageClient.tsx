@@ -1,6 +1,6 @@
 "use client";
 
-import { LoginButton } from "@/features/auth/login-button";
+import { LoginButton } from "@/features/login-with-spotify";
 import styled from "styled-components";
 
 const LoginWrapper = styled.main`
